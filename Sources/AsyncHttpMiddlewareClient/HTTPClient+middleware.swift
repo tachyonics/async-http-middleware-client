@@ -1,19 +1,16 @@
-// Copyright 2018-2022 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+//===----------------------------------------------------------------------===//
 //
-// Licensed under the Apache License, Version 2.0 (the "License").
-// You may not use this file except in compliance with the License.
-// A copy of the License is located at
+// This source file is part of the async-http-middleware-client open source project
 //
-//     http://www.apache.org/licenses/LICENSE-2.0
+// Copyright (c) 2022 the async-http-middleware-client project authors
+// Licensed under Apache License v2.0
 //
-// or in the "license" file accompanying this file. This file is distributed
-// on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
-// express or implied. See the License for the specific language governing
-// permissions and limitations under the License.
+// See LICENSE.txt for license information
+// See CONTRIBUTORS.txt for the list of VSCode Swift project authors
 //
-//  HTTPClient+middleware.swift
-//  AsyncHttpMiddlewareClient
+// SPDX-License-Identifier: Apache-2.0
 //
+//===----------------------------------------------------------------------===//
 
 import AsyncHTTPClient
 import HttpClientMiddleware
@@ -21,16 +18,9 @@ import NIOCore
 import NIOHTTP1
 import Logging
 
-extension HTTPClient {
-    public func execute(
-        requestBuilder: HttpRequestBuilder<HTTPClientRequest> = HttpRequestBuilder(),
-        middleware: RequestMiddlewareStack<HTTPClientRequest, HTTPClientResponse>,
-        deadline: NIODeadline,
-        logger: Logger? = nil
-    ) async throws -> HTTPClientResponse {
-        let clientHandler = ClientHandler(httpClient: self, deadline: deadline, logger: logger)
-        return try await middleware.handleMiddleware(input: requestBuilder, next: clientHandler)
-    }
+extension HTTPClient: HTTPClientProtocol {
+    public typealias ResponseType = HTTPClientResponse
+    
 }
 
 extension HTTPHeaders: HttpHeadersProtocol {
@@ -153,17 +143,5 @@ extension HttpRequestBuilder where HttpRequestType == HTTPClientRequest {
         }
         
         self.init(httpRequestProvider: provider)
-    }
-}
-
-internal struct ClientHandler<HTTPClientType: HTTPClientProtocol>: HandlerProtocol {
-    let httpClient: HTTPClientType
-    let deadline: NIODeadline
-    let logger: Logger?
-    
-    func handle(input: HttpRequestBuilder<HTTPClientRequest>) async throws -> HTTPClientType.ResponseType {
-        let request = try input.build()
-        
-        return try await self.httpClient.execute(request, deadline: deadline, logger: logger)
     }
 }

@@ -1,19 +1,16 @@
-// Copyright 2018-2022 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+//===----------------------------------------------------------------------===//
 //
-// Licensed under the Apache License, Version 2.0 (the "License").
-// You may not use this file except in compliance with the License.
-// A copy of the License is located at
+// This source file is part of the async-http-middleware-client open source project
 //
-//     http://www.apache.org/licenses/LICENSE-2.0
+// Copyright (c) 2022 the async-http-middleware-client project authors
+// Licensed under Apache License v2.0
 //
-// or in the "license" file accompanying this file. This file is distributed
-// on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
-// express or implied. See the License for the specific language governing
-// permissions and limitations under the License.
+// See LICENSE.txt for license information
+// See CONTRIBUTORS.txt for the list of VSCode Swift project authors
 //
-// HTTPMiddlewareClientProtocolTests.swift
-// AsyncHttpMiddlewareClient
+// SPDX-License-Identifier: Apache-2.0
 //
+//===----------------------------------------------------------------------===//
 
 import XCTest
 @testable import AsyncHttpMiddlewareClient
@@ -22,9 +19,11 @@ import AsyncHTTPClient
 import Logging
 import NIOCore
 
-private let userAgent = "MyUserAgent"
+private let userAgent1 = "MyUserAgent1"
+private let userAgent2 = "MyUserAgent2"
 
-struct UserAgentMiddleware<HttpRequestType: HttpRequestProtocol, OutputType>: MiddlewareProtocol {
+// middleware is generic with respect to the HttpRequest and Response types
+struct UserAgentMiddleware<HttpRequestType: HttpRequestProtocol, ResponseType>: MiddlewareProtocol {
     public let id: String = "UserAgentHeader"
     
     private let USER_AGENT: String = "User-Agent"
@@ -36,7 +35,7 @@ struct UserAgentMiddleware<HttpRequestType: HttpRequestProtocol, OutputType>: Mi
     }
     
     public func handle<HandlerType>(input: HttpRequestBuilder<HttpRequestType>,
-                          next: HandlerType) async throws -> OutputType
+                          next: HandlerType) async throws -> ResponseType
     where HandlerType: HandlerProtocol,
           Self.MInput == HandlerType.Input,
           Self.MOutput == HandlerType.Output {
@@ -46,28 +45,30 @@ struct UserAgentMiddleware<HttpRequestType: HttpRequestProtocol, OutputType>: Mi
     }
     
     public typealias MInput = HttpRequestBuilder<HttpRequestType>
-    public typealias MOutput = OutputType
+    public typealias MOutput = ResponseType
 }
 
 struct TestHTTPClient: HTTPClientProtocol {
-    func execute(_ request: HTTPClientRequest, deadline: NIODeadline, logger: Logger?) async throws -> Bool {
-        XCTAssertEqual(request.headers["User-Agent"], [userAgent])
-        
-        return true
+    func execute(_ request: HTTPClientRequest, deadline: NIODeadline, logger: Logger?) async throws -> String {
+        // return the user agent header as the "response" from this client
+        return request.headers["User-Agent"].joined(separator: ",")
     }
     
     
 }
 
+// create a custom client that defines its own client-level middleware
+// conforms to the `GenericHTTPMiddlewareClientProtocol` protocol for testing so it can use `TestHTTPClient`
+// usually custom clients would conform to the `HTTPMiddlewareClientProtocol` which uses `HTTPClient`
 struct MyHTTPMiddlewareClient: GenericHTTPMiddlewareClientProtocol {
-    public let middleware: RequestMiddlewareStack<HTTPClientRequest, Bool>
+    public let middleware: RequestMiddlewareStack<HTTPClientRequest, TestHTTPClient.ResponseType>
     public let wrappedHttpClient: TestHTTPClient
 
     public init() {
         self.wrappedHttpClient = TestHTTPClient()
         
-        var middlewareStack = RequestMiddlewareStack<HTTPClientRequest, Bool>(id: "MyHTTPMiddleware")
-        middlewareStack.buildPhase.intercept(position: .first, middleware: UserAgentMiddleware(userAgent: userAgent))
+        var middlewareStack = RequestMiddlewareStack<HTTPClientRequest, TestHTTPClient.ResponseType>(id: "MyHTTPMiddleware")
+        middlewareStack.buildPhase.intercept(position: .first, middleware: UserAgentMiddleware(userAgent: userAgent1))
         
         self.middleware = middlewareStack
     }
@@ -75,11 +76,43 @@ struct MyHTTPMiddlewareClient: GenericHTTPMiddlewareClientProtocol {
 
 class HTTPMiddlewareClientProtocolTests: XCTestCase {
 
-    func testBasicMiddleware() async throws {
+    func testCustomMiddlewareClientType() async throws {
         let client = MyHTTPMiddlewareClient()
         
         let response = try await client.execute()
         
-        XCTAssertEqual(true, response)
+        // confirm that the user agent was returned as the "response".
+        XCTAssertEqual(userAgent1, response)
+    }
+    
+    func testCustomMiddlewareClientTypeWithOverride() async throws {
+        let client = MyHTTPMiddlewareClient()
+        
+        let response1 = try await client.execute() { middlewareStack in
+            // this `UserAgentMiddleware` will "override" the one specified in the client's initializer
+            // (it overrides the previous middleware as they have the same "id")
+            middlewareStack.buildPhase.intercept(position: .first, middleware: UserAgentMiddleware(userAgent: userAgent2))
+        }
+        
+        // confirm that the appropriate user agent was returned as the "response".
+        XCTAssertEqual(userAgent2, response1)
+        
+        let response2 = try await client.execute()
+        
+        // confirm that the appropriate user agent was returned as the "response".
+        // the previous execute-level override shouldn't affect anything
+        XCTAssertEqual(userAgent1, response2)
+    }
+    
+    func testDirectlyPassingMiddleware() async throws {
+        let client = TestHTTPClient()
+        
+        var middlewareStack = RequestMiddlewareStack<HTTPClientRequest, TestHTTPClient.ResponseType>(id: "MyHTTPMiddleware")
+        middlewareStack.buildPhase.intercept(position: .first, middleware: UserAgentMiddleware(userAgent: userAgent1))
+        
+        let response = try await client.execute(middleware: middlewareStack)
+        
+        // confirm that the user agent was returned as the "response".
+        XCTAssertEqual(userAgent1, response)
     }
 }
