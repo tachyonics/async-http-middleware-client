@@ -17,7 +17,7 @@ import AsyncHTTPClient
 import NIOCore
 import Logging
 
-public struct HTTPMiddlewareClient: HTTPMiddlewareClientProtocol {
+public struct HTTPRequestMiddlewareClient: HTTPRequestMiddlewareClientProtocol {
     public let middleware: RequestMiddlewareStack<HTTPClientRequest, HTTPClientResponse>
     public let wrappedHttpClient: HTTPClient
     

@@ -23,7 +23,7 @@ private let userAgent1 = "MyUserAgent1"
 private let userAgent2 = "MyUserAgent2"
 
 // middleware is generic with respect to the HttpRequest and Response types
-struct UserAgentMiddleware<HttpRequestType: HttpRequestProtocol, ResponseType>: MiddlewareProtocol {
+struct UserAgentMiddleware<HttpRequestType: HttpRequestProtocol, ResponseType: HttpResponseProtocol>: RequestMiddlewareProtocol {
     public let id: String = "UserAgentHeader"
     
     private let USER_AGENT: String = "User-Agent"
@@ -37,15 +37,19 @@ struct UserAgentMiddleware<HttpRequestType: HttpRequestProtocol, ResponseType>: 
     public func handle<HandlerType>(input: HttpRequestBuilder<HttpRequestType>,
                           next: HandlerType) async throws -> ResponseType
     where HandlerType: HandlerProtocol,
-          Self.MInput == HandlerType.Input,
-          Self.MOutput == HandlerType.Output {
+          Self.Input == HandlerType.InputType,
+          Self.Output == HandlerType.OutputType {
         input.withHeader(name: USER_AGENT, value: self.userAgent)
         
         return try await next.handle(input: input)
     }
     
-    public typealias MInput = HttpRequestBuilder<HttpRequestType>
-    public typealias MOutput = ResponseType
+    public typealias Input = HttpRequestBuilder<HttpRequestType>
+    public typealias Output = ResponseType
+}
+
+extension String: HttpResponseProtocol {
+    
 }
 
 struct TestHTTPClient: HTTPClientProtocol {
@@ -60,7 +64,7 @@ struct TestHTTPClient: HTTPClientProtocol {
 // create a custom client that defines its own client-level middleware
 // conforms to the `GenericHTTPMiddlewareClientProtocol` protocol for testing so it can use `TestHTTPClient`
 // usually custom clients would conform to the `HTTPMiddlewareClientProtocol` which uses `HTTPClient`
-struct MyHTTPMiddlewareClient: GenericHTTPMiddlewareClientProtocol {
+struct MyHTTPMiddlewareClient: GenericHTTPRequestMiddlewareClientProtocol {
     public let middleware: RequestMiddlewareStack<HTTPClientRequest, TestHTTPClient.ResponseType>
     public let wrappedHttpClient: TestHTTPClient
 

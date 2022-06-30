@@ -17,18 +17,18 @@ import AsyncHTTPClient
 import NIOCore
 import Logging
 
-public protocol HTTPMiddlewareClientProtocol: GenericHTTPMiddlewareClientProtocol where HTTPClientType == HTTPClient {
+public protocol HTTPRequestMiddlewareClientProtocol: GenericHTTPRequestMiddlewareClientProtocol where HTTPClientType == HTTPClient {
     
 }
 
-public protocol GenericHTTPMiddlewareClientProtocol {
+public protocol GenericHTTPRequestMiddlewareClientProtocol {
     associatedtype HTTPClientType: HTTPClientProtocol
     
     var middleware: RequestMiddlewareStack<HTTPClientRequest, HTTPClientType.ResponseType> { get }
     var wrappedHttpClient: HTTPClientType { get }
 }
 
-public extension GenericHTTPMiddlewareClientProtocol {
+public extension GenericHTTPRequestMiddlewareClientProtocol {
     func execute(
         requestBuilder: HttpRequestBuilder<HTTPClientRequest> = HttpRequestBuilder(),
         deadline: NIODeadline = .distantFuture,

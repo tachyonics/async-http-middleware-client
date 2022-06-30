@@ -46,8 +46,14 @@ extension HTTPHeaders: HttpHeadersProtocol {
 }
 
 extension HTTPClientRequest: HttpRequestProtocol {
+    public typealias AdditionalRequestPropertiesType = Void
+    
     public typealias BodyType = HTTPClientRequest.Body
     public typealias HeadersType = HTTPHeaders
+}
+
+extension HTTPClientResponse: HttpResponseProtocol {
+    
 }
 
 // not great!!
@@ -128,20 +134,15 @@ extension HttpClientMiddleware.HttpMethod {
     }
 }
 
-extension HttpRequestBuilder where HttpRequestType == HTTPClientRequest {
-    public convenience init() {
-        func provider(method: HttpMethod,
-                      endpoint: Endpoint,
-                      headers: HeadersType,
-                      body: BodyType?) throws -> HTTPClientRequest {
-            var request = HTTPClientRequest(url: endpoint.url?.absoluteString ?? "")
-            request.method = method.asHTTPMethod()
-            request.headers = headers
-            request.body = body
-            
-            return request
-        }
-        
-        self.init(httpRequestProvider: provider)
+extension HTTPClientRequest {
+    public init(method: HttpMethod,
+                endpoint: Endpoint,
+                headers: HeadersType,
+                body: BodyType?,
+                additionalRequestProperties: HTTPClientRequest.AdditionalRequestPropertiesType?) {
+        self.init(url: endpoint.url?.absoluteString ?? "")
+        self.method = method.asHTTPMethod()
+        self.headers = headers
+        self.body = body
     }
 }
