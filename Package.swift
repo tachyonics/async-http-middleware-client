@@ -15,7 +15,7 @@ let package = Package(
             targets: ["AsyncHttpMiddlewareClient"]),
     ],
     dependencies: [
-        .package(url: "https://github.com/swift-server/async-http-client.git", from: "1.6.4"),
+        .package(url: "https://github.com/tachyonics/async-http-client.git", branch: "request_body_known_length"),
         .package(url: "https://github.com/tachyonics/swift-http-client-middleware", branch: "poc")
     ],
     targets: [

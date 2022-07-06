@@ -3,10 +3,10 @@
     {
       "identity" : "async-http-client",
       "kind" : "remoteSourceControl",
-      "location" : "https://github.com/swift-server/async-http-client.git",
+      "location" : "https://github.com/tachyonics/async-http-client.git",
       "state" : {
-        "revision" : "794dc9d42720af97cedd395e8cd2add9173ffd9a",
-        "version" : "1.11.1"
+        "branch" : "request_body_known_length",
+        "revision" : "0e2272338465d56ac599c2519c3d6bf24234947f"
       }
     },
     {
@@ -15,7 +15,7 @@
       "location" : "https://github.com/tachyonics/swift-http-client-middleware",
       "state" : {
         "branch" : "poc",
-        "revision" : "7ff8d1aa8655236949c58a9a4d59da883224fe5f"
+        "revision" : "e2763d4fd1365a02e3e54835fb95918528e8f623"
       }
     },
     {

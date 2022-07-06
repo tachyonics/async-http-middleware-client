@@ -52,6 +52,10 @@ extension HTTPClientRequest: HttpRequestProtocol {
     public typealias HeadersType = HTTPHeaders
 }
 
+extension HTTPClientRequest.Body: HTTPBodyProtocol {
+
+}
+
 extension HTTPClientResponse: HttpResponseProtocol {
     
 }
