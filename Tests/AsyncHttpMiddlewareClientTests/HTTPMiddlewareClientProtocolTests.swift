@@ -23,9 +23,7 @@ private let userAgent1 = "MyUserAgent1"
 private let userAgent2 = "MyUserAgent2"
 
 // middleware is generic with respect to the HttpRequest and Response types
-struct UserAgentMiddleware<HttpRequestType: HttpRequestProtocol, ResponseType: HttpResponseProtocol>: RequestMiddlewareProtocol {
-    public let id: String = "UserAgentHeader"
-    
+struct UserAgentMiddleware<HttpRequestType: HttpRequestProtocol, ResponseType: HttpResponseProtocol>: UserAgentHeaderMiddlewareProtocol {
     private let USER_AGENT: String = "User-Agent"
     
     let userAgent: String

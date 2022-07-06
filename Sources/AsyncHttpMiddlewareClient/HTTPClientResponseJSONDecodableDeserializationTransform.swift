@@ -22,14 +22,15 @@ public enum DeserializationError: Error {
     case missingBody(HTTPClientResponse)
 }
 
-public struct HTTPClientRequestJSONDecodableDeserializationTransform<OutputType: Decodable>: DeserializationTransformProtocol {
+public struct HTTPClientResponseJSONDecodableDeserializationTransform<OutputType: Decodable>: DeserializationTransformProtocol {
     public typealias HTTPResponseType = HTTPClientResponse
     
-    private let decoder = JSONDecoder()
+    private let decoder: JSONDecoder
     private let maxBytes: Int
     
-    public init(maxBytes: Int) {
+    public init(maxBytes: Int, decoder: JSONDecoder = .init()) {
         self.maxBytes = maxBytes
+        self.decoder = decoder
     }
     
     public func transform(input: HTTPClientResponse) async throws -> OutputType {

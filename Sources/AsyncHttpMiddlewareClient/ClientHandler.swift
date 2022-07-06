@@ -22,9 +22,7 @@ internal struct ClientHandler<HTTPClientType: HTTPClientProtocol>: HandlerProtoc
     let deadline: NIODeadline
     let logger: Logger?
     
-    func handle(input: HttpRequestBuilder<HTTPClientRequest>) async throws -> HTTPClientType.ResponseType {
-        let request = try input.build()
-        
-        return try await self.httpClient.execute(request, deadline: deadline, logger: logger)
+    func handle(input: HTTPClientRequest) async throws -> HTTPClientType.ResponseType {
+        return try await self.httpClient.execute(input, deadline: deadline, logger: logger)
     }
 }
