@@ -57,7 +57,9 @@ extension HTTPClientRequest.Body: HTTPBodyProtocol {
 }
 
 extension HTTPClientResponse: HttpResponseProtocol {
-    
+    public var statusCode: UInt {
+        return self.status.code
+    }
 }
 
 // not great!!
