@@ -26,7 +26,7 @@ public protocol GenericHTTPOperationMiddlewareClientProtocol {
     associatedtype InputType
     associatedtype OutputType
     
-    typealias MiddlewareStackType = OperationMiddlewareStack<InputType, OutputType, HTTPClientRequest, HTTPClientType.ResponseType>
+    typealias MiddlewareStackType = ClientOperationMiddlewareStack<InputType, OutputType, HTTPClientRequest, HTTPClientType.ResponseType>
     
     var middleware: MiddlewareStackType { get }
     var wrappedHttpClient: HTTPClientType { get }

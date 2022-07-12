@@ -13,7 +13,7 @@
 //===----------------------------------------------------------------------===//
 
 import AsyncHTTPClient
-import HttpClientMiddleware
+import HttpMiddleware
 import NIOCore
 import Logging
 

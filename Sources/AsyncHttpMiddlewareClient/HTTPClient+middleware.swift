@@ -13,6 +13,7 @@
 //===----------------------------------------------------------------------===//
 
 import AsyncHTTPClient
+import HttpMiddleware
 import HttpClientMiddleware
 import NIOCore
 import NIOHTTP1
@@ -45,7 +46,7 @@ extension HTTPHeaders: HttpHeadersProtocol {
     }
 }
 
-extension HTTPClientRequest: HttpRequestProtocol {
+extension HTTPClientRequest: HttpClientRequestProtocol {
     public typealias AdditionalRequestPropertiesType = Void
     
     public typealias BodyType = HTTPClientRequest.Body
@@ -56,14 +57,14 @@ extension HTTPClientRequest.Body: HTTPBodyProtocol {
 
 }
 
-extension HTTPClientResponse: HttpResponseProtocol {
+extension HTTPClientResponse: HttpClientResponseProtocol {
     public var statusCode: UInt {
         return self.status.code
     }
 }
 
 // not great!!
-extension HttpClientMiddleware.HttpMethod {
+extension HttpMiddleware.HttpMethod {
     func asHTTPMethod() -> NIOHTTP1.HTTPMethod {
         switch self {
         case .GET:

@@ -13,7 +13,7 @@
 //===----------------------------------------------------------------------===//
 
 import Foundation
-import HttpClientMiddleware
+import HttpMiddleware
 import AsyncHTTPClient
 import NIO
 import NIOFoundationCompat

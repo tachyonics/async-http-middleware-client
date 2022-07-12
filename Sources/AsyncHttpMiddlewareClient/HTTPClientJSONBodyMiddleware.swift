@@ -13,13 +13,14 @@
 //===----------------------------------------------------------------------===//
 
 import Foundation
+import HttpMiddleware
 import HttpClientMiddleware
 import AsyncHTTPClient
 import NIO
 import NIOFoundationCompat
 
 public struct HTTPClientJSONBodyMiddleware<BodyType: Encodable>: RequestBodyMiddlewareProtocol {
-    public typealias InputType = SerializeInputMiddlewarePhaseInput<BodyType, HTTPClientRequest>
+    public typealias InputType = SerializeClientRequestMiddlewarePhaseInput<BodyType, HTTPClientRequest>
     public typealias OutputType = HTTPClientResponse
     
     private let encoder: JSONEncoder

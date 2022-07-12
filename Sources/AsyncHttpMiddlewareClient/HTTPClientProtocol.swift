@@ -19,7 +19,7 @@ import NIOHTTP1
 import Logging
 
 public protocol HTTPClientProtocol {
-    associatedtype ResponseType: HttpResponseProtocol
+    associatedtype ResponseType: HttpClientResponseProtocol
     
     func execute(
         _ request: HTTPClientRequest,
@@ -33,8 +33,8 @@ public extension HTTPClientProtocol {
     // that takes an already-created `RequestMiddlewareStack`. Provides the ability to
     // pass a set of middleware per-request without creating a custom client type
     func execute(
-        middleware: RequestMiddlewareStack<HTTPClientRequest, ResponseType>,
-        requestBuilder: HttpRequestBuilder<HTTPClientRequest> = HttpRequestBuilder(),
+        middleware: ClientRequestMiddlewareStack<HTTPClientRequest, ResponseType>,
+        requestBuilder: HttpClientRequestBuilder<HTTPClientRequest> = HttpClientRequestBuilder(),
         deadline: NIODeadline = .distantFuture,
         logger: Logger? = nil
     ) async throws -> ResponseType {
@@ -46,7 +46,7 @@ public extension HTTPClientProtocol {
     // that takes an already-created `RequestMiddlewareStack`. Provides the ability to
     // pass a set of middleware per-request without creating a custom client type
     func execute<InputType, OutputType>(
-        middleware: OperationMiddlewareStack<InputType, OutputType, HTTPClientRequest, ResponseType>,
+        middleware: ClientOperationMiddlewareStack<InputType, OutputType, HTTPClientRequest, ResponseType>,
         input: InputType,
         deadline: NIODeadline = .distantFuture,
         logger: Logger? = nil

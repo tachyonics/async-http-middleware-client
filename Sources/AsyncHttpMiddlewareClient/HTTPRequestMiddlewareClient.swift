@@ -18,11 +18,11 @@ import NIOCore
 import Logging
 
 public struct HTTPRequestMiddlewareClient: HTTPRequestMiddlewareClientProtocol {
-    public let middleware: RequestMiddlewareStack<HTTPClientRequest, HTTPClientResponse>
+    public let middleware: ClientRequestMiddlewareStack<HTTPClientRequest, HTTPClientResponse>
     public let wrappedHttpClient: HTTPClient
     
     public init(eventLoopGroupProvider: HTTPClient.EventLoopGroupProvider,
-                middleware: RequestMiddlewareStack<HTTPClientRequest, HTTPClientResponse>,
+                middleware: ClientRequestMiddlewareStack<HTTPClientRequest, HTTPClientResponse>,
                 configuration: HTTPClient.Configuration = HTTPClient.Configuration()) {
         self.wrappedHttpClient = HTTPClient(eventLoopGroupProvider: eventLoopGroupProvider,
                                             configuration: configuration)
@@ -30,7 +30,7 @@ public struct HTTPRequestMiddlewareClient: HTTPRequestMiddlewareClientProtocol {
     }
 
     public init(eventLoopGroupProvider: HTTPClient.EventLoopGroupProvider,
-                middleware: RequestMiddlewareStack<HTTPClientRequest, HTTPClientResponse>,
+                middleware: ClientRequestMiddlewareStack<HTTPClientRequest, HTTPClientResponse>,
                 configuration: HTTPClient.Configuration = HTTPClient.Configuration(),
                 backgroundActivityLogger: Logger) {
         self.wrappedHttpClient = HTTPClient(eventLoopGroupProvider: eventLoopGroupProvider,

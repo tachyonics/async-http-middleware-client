@@ -24,16 +24,16 @@ public protocol HTTPRequestMiddlewareClientProtocol: GenericHTTPRequestMiddlewar
 public protocol GenericHTTPRequestMiddlewareClientProtocol {
     associatedtype HTTPClientType: HTTPClientProtocol
     
-    var middleware: RequestMiddlewareStack<HTTPClientRequest, HTTPClientType.ResponseType> { get }
+    var middleware: ClientRequestMiddlewareStack<HTTPClientRequest, HTTPClientType.ResponseType> { get }
     var wrappedHttpClient: HTTPClientType { get }
 }
 
 public extension GenericHTTPRequestMiddlewareClientProtocol {
     func execute(
-        requestBuilder: HttpRequestBuilder<HTTPClientRequest> = HttpRequestBuilder(),
+        requestBuilder: HttpClientRequestBuilder<HTTPClientRequest> = HttpClientRequestBuilder(),
         deadline: NIODeadline = .distantFuture,
         logger: Logger? = nil,
-        middlewareModifier: (inout RequestMiddlewareStack<HTTPClientRequest, HTTPClientType.ResponseType>) -> Void = { _ in }
+        middlewareModifier: (inout ClientRequestMiddlewareStack<HTTPClientRequest, HTTPClientType.ResponseType>) -> Void = { _ in }
     ) async throws -> HTTPClientType.ResponseType {
         var requestMiddleware = self.middleware
         middlewareModifier(&requestMiddleware)
