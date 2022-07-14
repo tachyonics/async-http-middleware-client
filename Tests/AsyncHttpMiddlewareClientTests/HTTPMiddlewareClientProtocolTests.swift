@@ -35,13 +35,13 @@ struct UserAgentMiddleware<HttpRequestType: HttpClientRequestProtocol,
     }
     
     public func handle<HandlerType>(input: HttpClientRequestBuilder<HttpRequestType>,
-                          next: HandlerType) async throws -> ResponseType
-    where HandlerType: HandlerProtocol,
+                                    context: MiddlewareContext, next: HandlerType) async throws -> ResponseType
+    where HandlerType: MiddlewareHandlerProtocol,
           Self.Input == HandlerType.InputType,
           Self.Output == HandlerType.OutputType {
         input.withHeader(name: USER_AGENT, value: self.userAgent)
         
-        return try await next.handle(input: input)
+              return try await next.handle(input: input, context: context)
     }
     
     public typealias Input = HttpClientRequestBuilder<HttpRequestType>

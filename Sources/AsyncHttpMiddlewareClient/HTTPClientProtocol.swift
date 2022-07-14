@@ -13,6 +13,7 @@
 //===----------------------------------------------------------------------===//
 
 import AsyncHTTPClient
+import HttpMiddleware
 import HttpClientMiddleware
 import NIOCore
 import NIOHTTP1
@@ -38,8 +39,9 @@ public extension HTTPClientProtocol {
         deadline: NIODeadline = .distantFuture,
         logger: Logger? = nil
     ) async throws -> ResponseType {
-        let clientHandler = ClientHandler(httpClient: self, deadline: deadline, logger: logger)
-        return try await middleware.handleMiddleware(input: requestBuilder, next: clientHandler)
+        let clientHandler = ClientHandler(httpClient: self, deadline: deadline)
+        let context = MiddlewareContext(logger: logger ?? Logger(label: "AsyncHTTPMiddlewareClient"))
+        return try await middleware.handleMiddleware(input: requestBuilder, context: context, next: clientHandler)
     }
     
     // provides a method on the `HTTPClientProtocol` - which `HTTPClient` conforms to -
@@ -51,7 +53,8 @@ public extension HTTPClientProtocol {
         deadline: NIODeadline = .distantFuture,
         logger: Logger? = nil
     ) async throws -> OutputType {
-        let clientHandler = ClientHandler(httpClient: self, deadline: deadline, logger: logger)
-        return try await middleware.handleMiddleware(input: input, next: clientHandler)
+        let clientHandler = ClientHandler(httpClient: self, deadline: deadline)
+        let context = MiddlewareContext(logger: logger ?? Logger(label: "AsyncHTTPMiddlewareClient"))
+        return try await middleware.handleMiddleware(input: input, context: context, next: clientHandler)
     }
 }

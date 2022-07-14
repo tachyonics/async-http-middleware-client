@@ -29,13 +29,14 @@ public struct HTTPClientJSONBodyMiddleware<BodyType: Encodable>: BodyMiddlewareP
         self.encoder = encoder
     }
     
-    public func handle<HandlerType>(input phaseInput: InputType, next: HandlerType) async throws
+    public func handle<HandlerType>(input phaseInput: InputType,
+                                    context: MiddlewareContext, next: HandlerType) async throws
     -> HTTPClientResponse
-    where HandlerType : HandlerProtocol, InputType == HandlerType.InputType, HTTPClientResponse == HandlerType.OutputType {
+    where HandlerType : MiddlewareHandlerProtocol, InputType == HandlerType.InputType, HTTPClientResponse == HandlerType.OutputType {
         let bodyData = try self.encoder.encode(phaseInput.input)
         
         let builder = phaseInput.builder
         builder.withBody(.bytes(ByteBuffer(data: bodyData)))
-        return try await next.handle(input: phaseInput)
+        return try await next.handle(input: phaseInput, context: context)
     }
 }

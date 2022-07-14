@@ -17,12 +17,12 @@ import HttpMiddleware
 import NIOCore
 import Logging
 
-internal struct ClientHandler<HTTPClientType: HTTPClientProtocol>: HandlerProtocol {
+internal struct ClientHandler<HTTPClientType: HTTPClientProtocol>: MiddlewareHandlerProtocol {
     let httpClient: HTTPClientType
     let deadline: NIODeadline
-    let logger: Logger?
     
-    func handle(input: HTTPClientRequest) async throws -> HTTPClientType.ResponseType {
-        return try await self.httpClient.execute(input, deadline: deadline, logger: logger)
+    func handle(input: HTTPClientRequest, context: MiddlewareContext) async throws -> HTTPClientType.ResponseType {
+        return try await self.httpClient.execute(input, deadline: deadline,
+                                                 logger: context.logger)
     }
 }
