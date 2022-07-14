@@ -40,7 +40,7 @@ public extension HTTPClientProtocol {
         logger: Logger? = nil
     ) async throws -> ResponseType {
         let clientHandler = ClientHandler(httpClient: self, deadline: deadline)
-        let context = MiddlewareContext(logger: logger ?? Logger(label: "AsyncHTTPMiddlewareClient"))
+        let context = MiddlewareContext(logger: logger)
         return try await middleware.handleMiddleware(input: requestBuilder, context: context, next: clientHandler)
     }
     
@@ -54,7 +54,7 @@ public extension HTTPClientProtocol {
         logger: Logger? = nil
     ) async throws -> OutputType {
         let clientHandler = ClientHandler(httpClient: self, deadline: deadline)
-        let context = MiddlewareContext(logger: logger ?? Logger(label: "AsyncHTTPMiddlewareClient"))
+        let context = MiddlewareContext(logger: logger)
         return try await middleware.handleMiddleware(input: input, context: context, next: clientHandler)
     }
 }
