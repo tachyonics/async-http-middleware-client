@@ -33,7 +33,7 @@ public struct HTTPClientResponseJSONDecodableDeserializationTransform<OutputType
         self.decoder = decoder
     }
     
-    public func transform(input: HTTPClientResponse) async throws -> OutputType {
+    public func transform(input: HTTPClientResponse, context: MiddlewareContext) async throws -> OutputType {
         var bodyBuffer = try await input.body.collect(upTo: self.maxBytes)
         
         let byteBufferSize = bodyBuffer.readableBytes
