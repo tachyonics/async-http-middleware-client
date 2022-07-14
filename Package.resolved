@@ -15,7 +15,7 @@
       "location" : "https://github.com/tachyonics/swift-http-client-middleware",
       "state" : {
         "branch" : "poc",
-        "revision" : "3aad4ec45bfae9b3551271557a8ed803942e4fdf"
+        "revision" : "f504ea93a684947ef68eee981be166c2813579ed"
       }
     },
     {
@@ -59,8 +59,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/apple/swift-nio-ssl.git",
       "state" : {
-        "revision" : "fd5f38b0039148e76c2e863a2fc868cc39bb451b",
-        "version" : "2.20.1"
+        "revision" : "c30c680c78c99afdabf84805a83c8745387c4ac7",
+        "version" : "2.20.2"
       }
     },
     {

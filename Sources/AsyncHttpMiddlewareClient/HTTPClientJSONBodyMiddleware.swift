@@ -19,7 +19,7 @@ import AsyncHTTPClient
 import NIO
 import NIOFoundationCompat
 
-public struct HTTPClientJSONBodyMiddleware<BodyType: Encodable>: RequestBodyMiddlewareProtocol {
+public struct HTTPClientJSONBodyMiddleware<BodyType: Encodable>: BodyMiddlewareProtocol {
     public typealias InputType = SerializeClientRequestMiddlewarePhaseInput<BodyType, HTTPClientRequest>
     public typealias OutputType = HTTPClientResponse
     
