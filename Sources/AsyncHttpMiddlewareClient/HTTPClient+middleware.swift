@@ -46,7 +46,7 @@ extension HTTPHeaders: HttpHeadersProtocol {
     }
 }
 
-extension HTTPClientRequest: HttpClientRequestProtocol {
+extension HTTPClientRequest: HttpClientRequestProtocol, @unchecked _MiddlewareSendable {
     public typealias AdditionalRequestPropertiesType = Void
     
     public typealias BodyType = HTTPClientRequest.Body
@@ -57,7 +57,7 @@ extension HTTPClientRequest.Body: HTTPBodyProtocol {
 
 }
 
-extension HTTPClientResponse: HttpClientResponseProtocol {
+extension HTTPClientResponse: HttpClientResponseProtocol, @unchecked _MiddlewareSendable {
     public var statusCode: UInt {
         return self.status.code
     }

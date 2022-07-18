@@ -3,6 +3,13 @@
 
 import PackageDescription
 
+let swiftSettings: [SwiftSetting]
+#if compiler(<5.6)
+swiftSettings = []
+#else
+swiftSettings = [.unsafeFlags(["-warn-concurrency"])]
+#endif
+
 let package = Package(
     name: "async-http-middleware-client",
     platforms: [
@@ -25,7 +32,9 @@ let package = Package(
             name: "AsyncHttpMiddlewareClient", dependencies: [
                 .product(name: "AsyncHTTPClient", package: "async-http-client"),
                 .product(name: "HttpClientMiddleware", package: "swift-http-client-middleware"),
-            ]),
+            ],
+            swiftSettings: swiftSettings
+        ),
         .testTarget(
             name: "AsyncHttpMiddlewareClientTests", dependencies: [
                 .target(name: "AsyncHttpMiddlewareClient"),
