@@ -12,7 +12,7 @@
 //
 //===----------------------------------------------------------------------===//
 
-import Foundation
+@preconcurrency import Foundation
 import HttpMiddleware
 import HttpClientMiddleware
 import AsyncHTTPClient
